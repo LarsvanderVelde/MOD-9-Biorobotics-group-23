@@ -47,5 +47,3 @@ class States(object):
         else: 
             move_down = False
         return move_down
-
-    
