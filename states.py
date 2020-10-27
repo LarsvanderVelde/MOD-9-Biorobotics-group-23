@@ -7,11 +7,11 @@ class States(object):
     
     def move(self):
         position = [self.stationary,self.moving_left,self.moving_up,self.moving_right,self.moving_down]
-        change = [0, 0, 0, 0, 0]
+        change_position = [0, 0, 0, 0, 0]
         multiply = [0, 1, 1, 1, 1]
         for i in range(len(position)):
             change += position[i] * multiply[i]
-        return change
+        return change_position
     
     def stationary(self):
         if not any(self.bicep_left, self.bicep_right, self.calve):
