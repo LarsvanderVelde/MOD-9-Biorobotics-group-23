@@ -14,7 +14,7 @@ class States(object):
         for j in range(len(position)):
             if change_position[j] != 0:
                 output = change_position[j]
-        return change_position, output
+        return output
     
     def stationary(self):
         if not any([self.bicep_left, self.bicep_right, self.calve]):

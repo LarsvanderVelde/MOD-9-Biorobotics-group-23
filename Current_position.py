@@ -1,1 +1,97 @@
-def
+import numpy as np
+import math
+
+class Angles (object):
+
+    def __init__(self):
+        self.psi0 = np.array([0,0])
+        self.psiEE0 = self.psi0
+
+        self.psiB1 = np.array([-173.2051, -100])
+        self.psiB2 = np.array([173.2051, -100])
+        self.psiB3 = np.array([0, 200])
+
+        self.dMotoAng = np.array([1.29239258, 3.3867875, -0.80200278])
+
+        self.lastMotoang = self.dMotoAng
+        return
+
+    def go_moving(self,amount):
+        if abs(amount) == 1:
+            self.go_horizontal(amount)
+        elif abs(amount) == 2:
+            self.go_vertical(amount//2)
+        print(self.change)
+        print(self.dMotoAng)
+        return 
+
+    def go_vertical(self, amount):
+        self.psiEE0[1] += amount
+        self.change = self.calc_moto_angle_change()
+        self.lastMotoang = self.dMotoAng
+        return self.change
+
+
+    def go_horizontal(self, amount):
+        self.psiEE0[0] += amount
+        self.change = self.calc_moto_angle_change()
+        self.lastMotoang = self.dMotoAng
+        return self.change
+    
+
+    def calc_moto_angle_change(self):
+
+        #calculating the needed angle change to reach desired angles
+
+        self.dMotoAng = self.calc_alpha_des( self.calc_alpha(self.calc_lenght_a(self.calc_vec_a())),      self.calc_vec_alpha(self.calc_vec_a(), self.calc_lenght_a(self.calc_vec_a())) )
+
+        return np.array([self.dMotoAng[0] - self.lastMotoang[0], self.dMotoAng[1] - self.lastMotoang[1], self.dMotoAng[2] - self.lastMotoang[2]])
+    
+
+    def calc_alpha_des(self, alpha, vec_alpha):
+        
+        #calculating the desired motor angle in respect to x axes from psi0
+        
+        return (alpha + vec_alpha)
+    
+
+    def calc_vec_alpha(self, vec_a, lenght_a): 
+        
+        #calculating vector a's orientation in respect to x axes from psi0
+        
+        self.vecAlpha = np.array([0, 0, 0],dtype = 'float')
+        for index in range(0,3):
+            if vec_a[index][1] >= 0:
+                self.vecAlpha[index] = math.acos(vec_a[index][0]/lenght_a[index])
+            else:
+                self.vecAlpha[index] = -(math.acos(vec_a[index][0]/lenght_a[index]))
+            
+        return self.vecAlpha
+
+
+    def calc_alpha(self, lenght_a): 
+        
+        #calculating angle alpha (on motorjoint) from the triangle beeing built by the arms and vector a
+        
+        return np.array([math.acos(lenght_a[0]/160), math.acos(lenght_a[1]/160), math.acos(lenght_a[2]/160)])
+
+
+    def calc_lenght_a(self, vec_a): 
+
+        #calculating the vectors lenght
+        
+        return np.array([np.linalg.norm(vec_a[0,:]), np.linalg.norm(vec_a[1,:]), np.linalg.norm(vec_a[2,:])])
+
+
+    def calc_vec_a(self): 
+        
+        #calculating the vectors from basejoints to sunjoints
+        
+        self.psiEE1 = self.psiEE0 + np.array([-73.6122, -42.5])
+        self.psiEE2 = self.psiEE0 + np.array([73.6122, -42.5])
+        self.psiEE3 = self.psiEE0 + np.array([0, 85])
+
+        return np.array([self.psiEE1 - self.psiB1, self.psiEE2 - self.psiB2, self.psiEE3 - self.psiB3])
+    
+   
+
